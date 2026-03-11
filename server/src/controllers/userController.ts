@@ -55,7 +55,8 @@ export const login = async (req: AuthRequest, res: Response, next: NextFunction)
 
 export const getProfile = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const user = await userService.getUserByEmail(req.body.email);
+    const { id } = req.params;
+    const user = await userService.getUserById(id);
     
     if (!user) {
       res.status(404).json({ message: "User not found" });
@@ -84,10 +85,10 @@ export const listUsers = async (req: AuthRequest, res: Response, next: NextFunct
 
 export const updateUser = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { email } = req.params;
+    const { id } = req.params;
     const { name, password } = req.body;
 
-    const user = await userService.updateUser(email, { name, password });
+    const user = await userService.updateUser(id, { name, password });
 
     if (!user) {
       res.status(404).json({ message: "User not found" });
@@ -110,8 +111,8 @@ export const updateUser = async (req: AuthRequest, res: Response, next: NextFunc
 
 export const deleteUser = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { email } = req.params;
-    await userService.deleteUser(email);
+    const { id } = req.params;
+    await userService.deleteUser(id);
     res.json({ message: "User deleted successfully" });
   } catch (error) {
     next(error);

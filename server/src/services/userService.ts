@@ -34,16 +34,16 @@ export class UserService {
     return { token, user };
   }
 
-  async getUserByEmail(email: string): Promise<IUser | null> {
-    return await User.findOne({ email });
+  async getUserById(id: string): Promise<IUser | null> {
+    return await User.findById(id).select("-password");
   }
 
   async listUsers(): Promise<IUser[]> {
     return await User.find().select("-password");
   }
 
-  async updateUser(email: string, data: Partial<{ name: string; password: string }>): Promise<IUser | null> {
-    const user = await User.findOne({ email });
+  async updateUser(id: string, data: Partial<{ name: string; password: string }>): Promise<IUser | null> {
+    const user = await User.findById(id);
     if (!user) {
       throw new Error("User not found");
     }
@@ -55,13 +55,13 @@ export class UserService {
     return user;
   }
 
-  async deleteUser(email: string): Promise<void> {
-    const user = await User.findOne({ email });
+  async deleteUser(id: string): Promise<void> {
+    const user = await User.findById(id);
     if (!user) {
       throw new Error("User not found");
     }
 
-    await User.deleteOne({ email });
+    await User.deleteOne({ _id: id });
   }
 }
 

@@ -1,48 +1,22 @@
 import mongoose, { Document, Schema } from "mongoose";
-
-export interface IOrderItem {
-  product: mongoose.Types.ObjectId;
-  quantity: number;
-  price: number;
-}
+import { ICartItem, cartItemSchema } from "./CartItem";
 
 export interface IOrder extends Document {
-  user: mongoose.Types.ObjectId;
-  items: IOrderItem[];
+  userId: mongoose.Types.ObjectId;
+  items: ICartItem[];
   total: number;
   status: "pending" | "paid" | "shipped" | "delivered" | "cancelled";
   createdAt: Date;
 }
 
-const orderItemSchema = new Schema<IOrderItem>(
-  {
-    product: {
-      type: Schema.Types.ObjectId,
-      ref: "Product",
-      required: true,
-    },
-    quantity: {
-      type: Number,
-      required: true,
-      min: 1,
-    },
-    price: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-  },
-  { _id: false },
-);
-
 const orderSchema = new Schema<IOrder>(
   {
-    user: {
+    userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    items: [orderItemSchema],
+    items: [cartItemSchema],
     total: {
       type: Number,
       required: true,
@@ -56,7 +30,7 @@ const orderSchema = new Schema<IOrder>(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 const Order = mongoose.model<IOrder>("Order", orderSchema);

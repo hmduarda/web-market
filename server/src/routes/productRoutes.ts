@@ -1,14 +1,22 @@
-const express = require("express");
-const router = express.Router();
-const productController = require("../controllers/productController");
+import { Router } from "express";
+import {
+  createProduct,
+  listProducts,
+  getProductById,
+  updateProduct,
+  deleteProduct,
+} from "../controllers/productController";
+import { authenticate, authorizeAdmin } from "../middlewares/auth";
+
+const router = Router();
 
 // Rotas públicas
-router.get("/", productController.listProducts);
-router.get("/:id", productController.getProductById);
+router.get("/", listProducts);
+router.get("/:id", getProductById);
 
-// Rotas privadas - Admin
-router.post("/", productController.createProduct);
-router.put("/:id", productController.updateProduct);
-router.delete("/:id", productController.deleteProduct);
+// Rotas privadas — somente admin
+router.post("/", authenticate, authorizeAdmin, createProduct);
+router.put("/:id", authenticate, authorizeAdmin, updateProduct);
+router.delete("/:id", authenticate, authorizeAdmin, deleteProduct);
 
-module.exports = router;
+export default router;

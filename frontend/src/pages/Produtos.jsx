@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 
 import {
@@ -11,16 +10,12 @@ import {
 import "./Produtos.css";
 
 const Produtos = () => {
-  
   const [produtos, setProdutos] = useState([]);
 
-  
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
 
-  
   const [produtoEditando, setProdutoEditando] = useState(null);
 
-  
   const [formulario, setFormulario] = useState({
     nome: "",
     precoAtual: "",
@@ -29,74 +24,76 @@ const Produtos = () => {
     dataValidade: "",
   });
 
-  
-  
   useEffect(() => {
-    carregarProdutos(); 
+    carregarProdutos();
   }, []);
 
-  
   const carregarProdutos = async () => {
     const dados = await listarProdutos();
     setProdutos(dados);
   };
 
-  
   const handleInputChange = (e) => {
-    const { name, value } = e.target; 
-    
+    const { name, value } = e.target;
+
     setFormulario({ ...formulario, [name]: value });
   };
 
-  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    
-    const produtoData = {
-      ...formulario,
-      precoAtual: parseFloat(formulario.precoAtual),
-    };
+    try {
+      const produtoData = {
+        ...formulario,
+        precoAtual: parseFloat(formulario.precoAtual),
+      };
 
-    
-    if (produtoEditando) {
-      await atualizarProduto(produtoEditando._id, produtoData);
-    } else {
-      await adicionarProduto(produtoData);
+      if (produtoEditando) {
+        await atualizarProduto(produtoEditando._id, produtoData);
+        alert("Produto atualizado com sucesso!");
+      } else {
+        await adicionarProduto(produtoData);
+        alert("Produto adicionado com sucesso!");
+      }
+
+      limparFormulario();
+      await carregarProdutos();
+    } catch (erro) {
+      alert(erro.message || "Erro ao salvar produto. Tente novamente.");
     }
-
-    
-    limparFormulario();
-    await carregarProdutos();
   };
 
-  
   const handleEditar = (produto) => {
-    setProdutoEditando(produto); 
+    setProdutoEditando(produto);
 
-    
+    const dataFormatada = produto.dataValidade
+      ? new Date(produto.dataValidade).toISOString().split("T")[0]
+      : "";
+
     setFormulario({
       nome: produto.nome,
       precoAtual: produto.precoAtual,
       tipo: produto.tipo,
       descricao: produto.descricao,
-      dataValidade: produto.dataValidade,
+      dataValidade: dataFormatada,
     });
 
-    setMostrarFormulario(true); 
+    setMostrarFormulario(true);
   };
 
-  
   const handleRemover = async (id) => {
     if (window.confirm("Tem certeza que deseja remover este produto?")) {
-      await removerProduto(id);
-      await carregarProdutos();
+      try {
+        await removerProduto(id);
+        alert("Produto removido com sucesso!");
+        await carregarProdutos();
+      } catch (erro) {
+        alert(erro.message || "Erro ao remover produto. Tente novamente.");
+      }
     }
   };
 
-  
   const limparFormulario = () => {
-    
     setFormulario({
       nome: "",
       precoAtual: "",
@@ -104,8 +101,8 @@ const Produtos = () => {
       descricao: "",
       dataValidade: "",
     });
-    setProdutoEditando(null); 
-    setMostrarFormulario(false); 
+    setProdutoEditando(null);
+    setMostrarFormulario(false);
   };
 
   return (
@@ -135,10 +132,10 @@ const Produtos = () => {
                 <label>Nome do Produto:</label>
                 <input
                   type="text"
-                  name="nome" 
-                  value={formulario.nome} 
-                  onChange={handleInputChange} 
-                  required 
+                  name="nome"
+                  value={formulario.nome}
+                  onChange={handleInputChange}
+                  required
                 />
               </div>
 
@@ -146,7 +143,7 @@ const Produtos = () => {
                 <label>Preço Atual (R$):</label>
                 <input
                   type="number"
-                  step="0.01" 
+                  step="0.01"
                   name="precoAtual"
                   value={formulario.precoAtual}
                   onChange={handleInputChange}
@@ -172,7 +169,7 @@ const Produtos = () => {
               <div className="grupoFormulario">
                 <label>Data de Validade:</label>
                 <input
-                  type="date" 
+                  type="date"
                   name="dataValidade"
                   value={formulario.dataValidade}
                   onChange={handleInputChange}
@@ -189,7 +186,7 @@ const Produtos = () => {
                 value={formulario.descricao}
                 onChange={handleInputChange}
                 required
-                rows="3" 
+                rows="3"
               />
             </div>
 
@@ -200,7 +197,7 @@ const Produtos = () => {
                 {produtoEditando ? "Atualizar" : "Adicionar"}
               </button>
               <button
-                type="button" 
+                type="button"
                 className="botaoSecundario"
                 onClick={limparFormulario}
               >
@@ -280,4 +277,3 @@ const Produtos = () => {
 };
 
 export default Produtos;
-

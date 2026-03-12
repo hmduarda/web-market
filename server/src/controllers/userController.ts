@@ -55,8 +55,8 @@ export const login = async (req: AuthRequest, res: Response, next: NextFunction)
 
 export const getProfile = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { id } = req.params;
-    const user = await userService.getUserById(id);
+    const userId = req.user!.id;
+    const user = await userService.getUserById(userId);
     
     if (!user) {
       res.status(404).json({ message: "User not found" });

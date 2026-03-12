@@ -1,18 +1,14 @@
 import Cart, { ICart } from "../models/Cart";
 import Product from "../models/Product";
 
-
 class CartService {
-
   async getCart(userId: string): Promise<ICart> {
-
-    let cart = await Cart.findOne({ user: userId }).populate("items.product");
+    let cart = await Cart.findOne({ userId }).populate("items.productId");
 
     if (!cart) {
       cart = await Cart.create({
-        user: userId,
+        userId,
         items: [],
-        total: 0,
       });
     }
 
@@ -20,7 +16,6 @@ class CartService {
   }
 
   async addToCart(userId: string, productId: string, quantity: number): Promise<ICart> {
-
     if (quantity <= 0) {
       throw new Error("Invalid quantity");
     }
@@ -31,35 +26,28 @@ class CartService {
       throw new Error("Product not found");
     }
 
-    let cart = await Cart.findOne({ user: userId });
+    let cart = await Cart.findOne({ userId });
 
     if (!cart) {
       cart = new Cart({
-        user: userId,
+        userId,
         items: [],
-        total: 0,
       });
     }
 
     const itemIndex = cart.items.findIndex(
-      item => item.product.toString() === productId
+      (item) => item.productId.toString() === productId
     );
 
     if (itemIndex > -1) {
-
       cart.items[itemIndex].quantity += quantity;
-
     } else {
-
       cart.items.push({
-        product: product._id,
+        productId: product._id,
         quantity,
-        price: product.price,
+        unitPrice: product.price,
       });
-
     }
-
-    this.calculateTotal(cart);
 
     await cart.save();
 
@@ -67,19 +55,18 @@ class CartService {
   }
 
   async updateCartItem(userId: string, productId: string, quantity: number): Promise<ICart> {
-
     if (quantity <= 0) {
       throw new Error("Invalid quantity");
     }
 
-    const cart = await Cart.findOne({ user: userId });
+    const cart = await Cart.findOne({ userId });
 
     if (!cart) {
       throw new Error("Cart not found");
     }
 
     const item = cart.items.find(
-      item => item.product.toString() === productId
+      (item) => item.productId.toString() === productId
     );
 
     if (!item) {
@@ -88,26 +75,21 @@ class CartService {
 
     item.quantity = quantity;
 
-    this.calculateTotal(cart);
-
     await cart.save();
 
     return cart;
   }
 
   async removeFromCart(userId: string, productId: string): Promise<ICart> {
-
-    const cart = await Cart.findOne({ user: userId });
+    const cart = await Cart.findOne({ userId });
 
     if (!cart) {
       throw new Error("Cart not found");
     }
 
     cart.items = cart.items.filter(
-      item => item.product.toString() !== productId
+      (item) => item.productId.toString() !== productId
     );
-
-    this.calculateTotal(cart);
 
     await cart.save();
 
@@ -115,29 +97,18 @@ class CartService {
   }
 
   async clearCart(userId: string): Promise<ICart> {
-
-    const cart = await Cart.findOne({ user: userId });
+    const cart = await Cart.findOne({ userId });
 
     if (!cart) {
       throw new Error("Cart not found");
     }
 
     cart.items = [];
-    cart.total = 0;
 
     await cart.save();
 
     return cart;
   }
-
-  private calculateTotal(cart: ICart) {
-
-    cart.total = cart.items.reduce((acc, item) => {
-      return acc + item.price * item.quantity;
-    }, 0);
-
-  }
-
 }
 
 export default new CartService();

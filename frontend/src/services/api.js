@@ -81,6 +81,12 @@ export const adicionarProduto = async (produto) => {
       method: "POST",
       body: JSON.stringify(produto),
     });
+
+    if (!resposta.ok) {
+      const erro = await resposta.json();
+      throw new Error(erro.mensagem || "Erro ao adicionar produto");
+    }
+
     const dados = await resposta.json();
     return dados;
   } catch (erro) {
@@ -95,6 +101,12 @@ export const atualizarProduto = async (id, produto) => {
       method: "PUT",
       body: JSON.stringify(produto),
     });
+
+    if (!resposta.ok) {
+      const erro = await resposta.json();
+      throw new Error(erro.mensagem || "Erro ao atualizar produto");
+    }
+
     const dados = await resposta.json();
     return dados;
   } catch (erro) {
@@ -105,9 +117,15 @@ export const atualizarProduto = async (id, produto) => {
 
 export const removerProduto = async (id) => {
   try {
-    await fetchComToken(`${API_URL}/products/${id}`, {
+    const resposta = await fetchComToken(`${API_URL}/products/${id}`, {
       method: "DELETE",
     });
+
+    if (!resposta.ok) {
+      const erro = await resposta.json();
+      throw new Error(erro.mensagem || "Erro ao remover produto");
+    }
+
     return true;
   } catch (erro) {
     console.error("Erro ao remover produto:", erro);

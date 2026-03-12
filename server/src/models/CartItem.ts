@@ -1,14 +1,14 @@
 import { Schema, Types } from "mongoose";
 
 export interface ICartItem {
-  product: Types.ObjectId;
+  productId: Types.ObjectId;
   quantity: number;
-  price: number;
+  unitPrice: number;
 }
 
 export const cartItemSchema = new Schema<ICartItem>(
   {
-    product: {
+    productId: {
       type: Schema.Types.ObjectId,
       ref: "Product",
       required: true,
@@ -18,7 +18,7 @@ export const cartItemSchema = new Schema<ICartItem>(
       required: true,
       min: 1,
     },
-    price: {
+    unitPrice: {
       type: Number,
       required: true,
       min: 0,

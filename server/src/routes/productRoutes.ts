@@ -7,16 +7,15 @@ import {
   deleteProduct,
 } from "../controllers/productController";
 import { authenticate, authorizeAdmin } from "../middlewares/auth";
+import { uploadSingle, handleUploadError } from "../middlewares/upload";
 
 const router = Router();
 
-// Rotas públicas
 router.get("/", listProducts);
 router.get("/:id", getProductById);
 
-// Rotas privadas — somente admin
-router.post("/", authenticate, authorizeAdmin, createProduct);
-router.put("/:id", authenticate, authorizeAdmin, updateProduct);
+router.post("/", authenticate, authorizeAdmin, uploadSingle, handleUploadError, createProduct);
+router.put("/:id", authenticate, authorizeAdmin, uploadSingle, handleUploadError, updateProduct);
 router.delete("/:id", authenticate, authorizeAdmin, deleteProduct);
 
 export default router;

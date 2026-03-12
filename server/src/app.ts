@@ -1,11 +1,7 @@
 import express from "express";
 import cors from "cors";
 import path from "path";
-import authRoutes from "./routes/authRoutes";
-import userRoutes from "./routes/userRoutes";
-import productRoutes from "./routes/productRoutes";
-import cartRoutes from "./routes/cartRoutes";
-import orderRoutes from "./routes/orderRoutes";
+import routes from "./routes";
 import { errorHandler } from "./middlewares/errorHandler";
 
 const app = express();
@@ -25,11 +21,7 @@ app.get("/", (req, res) => {
   res.json({ message: "Server running!" });
 });
 
-app.use("/auth", authRoutes);
-app.use("/users", userRoutes);
-app.use("/products", productRoutes);
-app.use("/cart", cartRoutes);
-app.use("/orders", orderRoutes);
+app.use(routes);
 
 app.use(errorHandler);
 

@@ -4,9 +4,27 @@ import { Request, Response, NextFunction } from "express";
 
 export const createProduct = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { name, description, price, stock, image } = req.body;
-    const product = await productService.createProduct({ name, description, price, stock, image });
-    res.status(201).json(product);
+    const { name, description, price, stock } = req.body;
+    
+    if (!req.file) {
+      res.status(400).json({ message: "Image is required" });
+      return;
+    }
+    
+    const image = `/uploads/${req.file.filename}`;
+    
+    const product = await productService.createProduct({ 
+      name, 
+      description, 
+      price: Number(price), 
+      stock: Number(stock), 
+      image 
+    });
+    
+    res.status(201).json({
+      message: "Product created successfully",
+      product
+    });
   } catch (error) {
     next(error);
   }
@@ -38,13 +56,27 @@ export const getProductById = async (req: Request, res: Response, next: NextFunc
 export const updateProduct = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
-    const { name, description, price, stock, image } = req.body;
-    const product = await productService.updateProduct(id, { name, description, price, stock, image });
+    const { name, description, price, stock } = req.body;
+    
+    const image = req.file ? `/uploads/${req.file.filename}` : undefined;
+    
+    const product = await productService.updateProduct(id, { 
+      name, 
+      description, 
+      price: price ? Number(price) : undefined, 
+      stock: stock ? Number(stock) : undefined, 
+      image 
+    });
+    
     if (!product) {
       res.status(404).json({ message: "Product not found" });
       return;
     }
-    res.status(200).json(product);
+    
+    res.status(200).json({
+      message: "Product updated successfully",
+      product
+    });
   } catch (error) {
     next(error);
   }

@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from "express";
 
 export const createProduct = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { name, description, price, stock } = req.body;
+    const { name, description, price, stock, categories } = req.body;
     
     if (!req.file) {
       res.status(400).json({ message: "Image is required" });
@@ -12,13 +12,15 @@ export const createProduct = async (req: AuthRequest, res: Response, next: NextF
     }
     
     const image = `/uploads/${req.file.filename}`;
+    const parsedCategories = categories ? JSON.parse(categories) : undefined;
     
     const product = await productService.createProduct({ 
       name, 
       description, 
       price: Number(price), 
       stock: Number(stock), 
-      image 
+      image,
+      categories: parsedCategories,
     });
     
     res.status(201).json({
@@ -56,16 +58,18 @@ export const getProductById = async (req: Request, res: Response, next: NextFunc
 export const updateProduct = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
-    const { name, description, price, stock } = req.body;
+    const { name, description, price, stock, categories } = req.body;
     
     const image = req.file ? `/uploads/${req.file.filename}` : undefined;
+    const parsedCategories = categories ? JSON.parse(categories) : undefined;
     
     const product = await productService.updateProduct(id, { 
       name, 
       description, 
       price: price ? Number(price) : undefined, 
       stock: stock ? Number(stock) : undefined, 
-      image 
+      image,
+      categories: parsedCategories,
     });
     
     if (!product) {
@@ -90,4 +94,4 @@ export const deleteProduct = async (req: AuthRequest, res: Response, next: NextF
   } catch (error) {
     next(error);
   }
-}; 
+};

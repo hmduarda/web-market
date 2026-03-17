@@ -1,8 +1,9 @@
 import mongoose, { Document, Schema } from "mongoose";
 import { ICartItem, cartItemSchema } from "./CartItem";
+import { IUser } from "./User";
 
 export interface ICart extends Document {
-  userId: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId | IUser;
   items: ICartItem[];
   updatedAt: Date;
 }

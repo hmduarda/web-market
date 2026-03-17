@@ -10,18 +10,19 @@ class ProductService {
     price: number;
     stock: number;
     image: string;
+    categories?: string[];
   }): Promise<IProduct> {
     const product = new Product(data);
     await product.save();
-    return product;
+    return await product.populate({ path: "categories", strictPopulate: false });
   }
 
   async listProducts(): Promise<IProduct[]> {
-    return await Product.find().sort({ createdAt: -1 });
+    return await Product.find().populate({ path: "categories", strictPopulate: false }).sort({ createdAt: -1 });
   }
 
   async getProductById(id: string): Promise<IProduct | null> {
-    return await Product.findById(id);
+    return await Product.findById(id).populate({ path: "categories", strictPopulate: false });
   }
 
   async updateProduct(
@@ -32,6 +33,7 @@ class ProductService {
       price: number;
       stock: number;
       image: string;
+      categories: string[];
     }>
   ): Promise<IProduct | null> {
     const product = await Product.findById(id);
@@ -40,7 +42,7 @@ class ProductService {
       this.deleteImageFile(product.image);
     }
     
-    return await Product.findByIdAndUpdate(id, data, { new: true });
+    return await Product.findByIdAndUpdate(id, data, { new: true }).populate({ path: "categories", strictPopulate: false });
   }
 
   async deleteProduct(id: string): Promise<void> {

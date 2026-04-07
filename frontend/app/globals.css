@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+:root {
+  --bg-page: #eaeded;
+  --bg-card: #ffffff;
+  --bg-header: #131921;
+  --bg-header-bottom: #232f3e;
+  --bg-input: #ffffff;
+  --bg-hover: #f7f7f7;
+
+  --text-primary: #ffffff;
+  --text-dark: #0f1111;
+  --text-muted: #565959;
+  --text-link: #007185;
+  --text-price: #0f1111;
+
+  --accent: #febd69;
+  --accent-hover: #f3a847;
+  --btn-cart: #ffd814;
+  --btn-cart-hover: #f7ca00;
+  --btn-buy: #ffa41c;
+  --btn-buy-hover: #fa8900;
+  --danger: #b12704;
+
+  --border-light: #d5d9d9;
+  --border-card: #ddd;
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@theme inline {
+  --color-background: var(--bg-page);
+  --color-foreground: var(--text-dark);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+@layer base {
+  body {
+    background-color: var(--bg-page);
+    color: var(--text-dark);
+  }
+}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import api from "@/lib/api";
 import { useAuthStore } from "@/stores/useAuthStore";

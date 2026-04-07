@@ -35,7 +35,7 @@ export class UserService {
   }
 
   async getUserById(id: string): Promise<IUser | null> {
-    return await User.findById(id).select("-password");
+    return await User.findById(id).select("-password") as IUser | null;
   }
 
   async listUsers(): Promise<IUser[]> {

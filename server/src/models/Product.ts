@@ -1,5 +1,4 @@
 import mongoose, { Document, Schema } from "mongoose";
-import { ICategory, categorySchema } from "./Category";
 
 export interface IProduct extends Document {
   name: string;
@@ -8,7 +7,6 @@ export interface IProduct extends Document {
   stock: number;
   image: string;
   createdAt: Date;
-  categories: Category[];
 }
 
 const productSchema = new Schema<IProduct>(

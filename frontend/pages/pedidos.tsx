@@ -63,7 +63,11 @@ export default function PedidosPage() {
       ) : (
         <div className="flex flex-col gap-4">
           {orders.map((order) => (
-            <OrderCard key={order._id} order={order} />
+            <OrderCard 
+              key={order._id} 
+              order={order} 
+              onCancel={() => setOrders(orders.map(o => o._id === order._id ? { ...o, status: 'cancelled' } : o))}
+            />
           ))}
         </div>
       )}

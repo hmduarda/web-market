@@ -5,6 +5,7 @@ import {
   getProductById,
   updateProduct,
   deleteProduct,
+  getProductsByCategory,
 } from "../controllers/productController";
 import { authenticate, authorizeAdmin } from "../middlewares/auth";
 import { uploadSingle, handleUploadError } from "../middlewares/upload";
@@ -12,6 +13,7 @@ import { uploadSingle, handleUploadError } from "../middlewares/upload";
 const router = Router();
 
 router.get("/", listProducts);
+router.get("/by-category", getProductsByCategory);
 router.get("/:id", getProductById);
 
 router.post("/", authenticate, authorizeAdmin, uploadSingle, handleUploadError, createProduct);

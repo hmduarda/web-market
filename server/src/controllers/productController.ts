@@ -86,6 +86,39 @@ export const updateProduct = async (req: AuthRequest, res: Response, next: NextF
   }
 };
 
+export const getProductsByCategory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    let categoriesParam = req.query.categories;
+    if (Array.isArray(categoriesParam)) {
+      categoriesParam = categoriesParam.join(",");
+    }
+
+    if (!categoriesParam || typeof categoriesParam !== "string" || categoriesParam.trim() === "") {
+      res.status(400).json({ error: "Nenhuma categoria foi enviada na requisição." });
+      return;
+    }
+
+    const categoriesArray = categoriesParam
+      .split(",")
+      .map((category) => category.trim())
+      .filter((category) => category.length > 0);
+
+    if (categoriesArray.length === 0) {
+      res.status(400).json({ error: "Lista de categorias inválida." });
+      return;
+    }
+
+    const products = await productService.getProductsByCategory(categoriesArray);
+    res.status(200).json(products);
+  } catch (error: any) {
+    if (error.message && error.message.includes("Validation Error")) {
+      res.status(400).json({ error: error.message });
+      return;
+    }
+    next(error);
+  }
+};
+
 export const deleteProduct = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;

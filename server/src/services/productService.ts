@@ -45,6 +45,16 @@ class ProductService {
     return await Product.findByIdAndUpdate(id, data, { new: true }).populate({ path: "categories", strictPopulate: false });
   }
 
+  async getProductsByCategory(categories: string[]): Promise<IProduct[]> {
+    if (!categories || categories.length === 0) {
+      throw new Error("Validation Error: Nenhuma categoria informada.");
+    }
+
+    return await Product.find({
+      categories: { $in: categories },
+    }).populate({ path: "categories", strictPopulate: false });
+  }
+
   async deleteProduct(id: string): Promise<void> {
     const product = await Product.findById(id);
     

@@ -93,6 +93,33 @@ class OrderService {
 
     return order;
   }
+  async cancelOrder(orderId: string, userId: string): Promise<IOrder> {
+    const order = await Order.findOne({ _id: orderId, userId });
+
+    if (!order) {
+      throw new Error("Order not found");
+    }
+
+    if (order.status !== "pending") {
+      throw new Error("O pedido não pode mais ser cancelado pois não está pendente.");
+    }
+
+    try {
+      for (const item of order.items) {
+        await Product.findByIdAndUpdate(
+          item.productId,
+          { $inc: { stock: item.quantity } }
+        );
+      }
+
+      order.status = "cancelled";
+      await order.save();
+      
+      return order;
+    } catch (error) {
+      throw new Error("Falha ao cancelar pedido.");
+    }
+  }
 }
 
 export default new OrderService();

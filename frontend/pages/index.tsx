@@ -34,13 +34,33 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    Promise.all([api.get("/products"), api.get("/category")])
-      .then(([prodRes, catRes]) => {
-        setProducts(prodRes.data);
-        setCategories(catRes.data);
-      })
-      .finally(() => setLoading(false));
+    api
+      .get("/category")
+      .then((res) => setCategories(res.data))
+      .catch(() => toast.error("Erro ao carregar categorias"));
   }, []);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const response = selectedCategory
+          ? await api.get("/products/by-category", {
+              params: { categories: selectedCategory },
+            })
+          : await api.get("/products");
+
+        setProducts(response.data);
+      } catch (error) {
+        setProducts([]);
+        toast.error("Erro ao carregar produtos");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [selectedCategory]);
 
   const handleAddToCart = async (productId: string) => {
     if (!token) {
@@ -56,11 +76,7 @@ export default function Home() {
     }
   };
 
-  const filtered = selectedCategory
-    ? products.filter((p: Product & { categories?: string[] }) =>
-        (p as Product & { categories?: string[] }).categories?.includes(selectedCategory)
-      )
-    : products;
+  const filtered = products;
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
